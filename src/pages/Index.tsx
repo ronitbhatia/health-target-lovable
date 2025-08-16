@@ -1,14 +1,56 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { LandingPage } from "@/components/LandingPage";
+import { OnboardingForm, OnboardingData } from "@/components/OnboardingForm";
+import { Dashboard } from "@/components/Dashboard";
+
+type AppState = "landing" | "onboarding" | "dashboard";
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentState, setCurrentState] = useState<AppState>("landing");
+  const [userData, setUserData] = useState<OnboardingData | null>(null);
+
+  const handleGetStarted = () => {
+    setCurrentState("onboarding");
+  };
+
+  const handleOnboardingComplete = (data: OnboardingData) => {
+    setUserData(data);
+    setCurrentState("dashboard");
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentState("landing");
+    setUserData(null);
+  };
+
+  const handleBackToOnboarding = () => {
+    setCurrentState("onboarding");
+  };
+
+  if (currentState === "landing") {
+    return <LandingPage onGetStarted={handleGetStarted} />;
+  }
+
+  if (currentState === "onboarding") {
+    return (
+      <OnboardingForm 
+        onComplete={handleOnboardingComplete}
+        onBack={handleBackToLanding}
+      />
+    );
+  }
+
+  if (currentState === "dashboard" && userData) {
+    return (
+      <Dashboard 
+        userData={userData}
+        onBack={handleBackToOnboarding}
+      />
+    );
+  }
+
+  // Fallback
+  return <LandingPage onGetStarted={handleGetStarted} />;
 };
 
 export default Index;
